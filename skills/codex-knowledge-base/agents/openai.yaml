@@ -1,0 +1,6 @@
+interface:
+  display_name: "Codex Knowledge Base"
+  short_description: "Build a safe Codex memory and chat knowledge base."
+  default_prompt: "Use $codex-knowledge-base to collect Codex memories, habits, and chat history from this computer, prepare a sanitized knowledge base, and stage it for GitHub."
+policy:
+  allow_implicit_invocation: true
