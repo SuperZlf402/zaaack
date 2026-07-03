@@ -93,6 +93,12 @@ SECRET_PATTERNS = [
 ]
 
 
+def safe_slug(value: str) -> str:
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-", value.strip())
+    slug = slug.strip(".-_")
+    return slug or "unknown-computer"
+
+
 def default_sources() -> list[Path]:
     home = Path.home()
     candidates = [
@@ -239,6 +245,7 @@ def write_outputs(out: Path, rows: list[dict[str, Any]], sources: list[Path], co
     out.mkdir(parents=True, exist_ok=True)
     manifests = out / "manifests"
     manifests.mkdir(exist_ok=True)
+    computer_slug = safe_slug(computer_name)
 
     with (manifests / "file_inventory.csv").open("w", newline="", encoding="utf-8") as fh:
         writer = csv.DictWriter(fh, fieldnames=["path", "size", "kind", "status"])
@@ -273,6 +280,8 @@ def write_outputs(out: Path, rows: list[dict[str, Any]], sources: list[Path], co
 
 Computer: `{computer_name}`
 
+Recommended GitHub folder: `codex/computers/{computer_slug}/`
+
 Generated: `{now}`
 
 This folder is a sanitized first-pass export of Codex-related memories, habits, instructions, and chat history. Review before uploading to GitHub.
@@ -302,6 +311,7 @@ This folder is a sanitized first-pass export of Codex-related memories, habits, 
         "- Search for client names, personal information, passwords, API keys, tokens, and confidential audit material.",
         "- Confirm `conversations.md` does not include hidden reasoning or internal analysis.",
         "- Confirm each computer export has a clear computer/source name.",
+        f"- Upload this export to `codex/computers/{computer_slug}/`, not to a generic `current-computer` folder.",
         "- Commit only sanitized output files, not raw Codex app folders.",
         "",
         "## Items Flagged For Review",
@@ -311,6 +321,8 @@ This folder is a sanitized first-pass export of Codex-related memories, habits, 
     (out / "import_checklist.md").write_text("\n".join(checklist), encoding="utf-8")
     summary = {
         "computer_name": computer_name,
+        "computer_slug": computer_slug,
+        "recommended_github_folder": f"codex/computers/{computer_slug}",
         "generated_at": now,
         "sources": [str(p) for p in sources],
         "file_count": len(rows),
@@ -333,6 +345,7 @@ def main() -> int:
     rows = walk_sources(sources, max_bytes)
     write_outputs(Path(args.output).expanduser(), rows, sources, args.computer_name, max_bytes)
     print(f"Created Codex knowledge-base draft at: {Path(args.output).expanduser()}")
+    print(f"Recommended GitHub folder: codex/computers/{safe_slug(args.computer_name)}")
     print(f"Sources scanned: {len(sources)}")
     print(f"Candidate files indexed: {len(rows)}")
     return 0
