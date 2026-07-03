@@ -88,7 +88,7 @@ SECRET_PATTERNS = [
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----", re.S),
     re.compile(r"(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|secret|password|passwd|cookie|authorization)\b\s*[:=]\s*['\"]?[^'\"\s]{8,}"),
     re.compile(r"(?i)\bbearer\s+[a-z0-9._~+/=-]{16,}"),
-    re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
+    re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
     re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b"),
 ]
 
